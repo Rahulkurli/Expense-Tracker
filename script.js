@@ -1,3 +1,14 @@
+function formatDateTime(date = new Date()) {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+
+  const h = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+
+  return `${d}/${m}/${y} ${h}:${min}`;
+}
+
 const navItems = document.querySelectorAll(".nav-item");
 
 navItems.forEach((item) => {
@@ -15,27 +26,88 @@ let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 function saveTransactions() {
   localStorage.setItem("transactions", JSON.stringify(transactions));
 }
+function deleteTransaction(id) {
+  transactions = transactions.filter((tx) => tx.id !== id);
+  saveTransactions();
+  renderTransactions();
+  updateSummary();
+}
+function clearAllTransactions() {
+  if (!transactions.length) return;
 
+  const confirmClear = confirm(
+    "Are you sure you want to delete all transactions?"
+  );
+  if (!confirmClear) return;
+
+  transactions = [];
+  saveTransactions();
+  renderTransactions();
+  updateSummary();
+}
+
+// function renderTransactions() {
+//   const list = document.getElementById("transaction-list");
+//   list.innerHTML = "";
+
+//   transactions.forEach((tx) => {
+//     const isIncome = tx.amount > 0;
+
+//     const div = document.createElement("div");
+//     div.className = "flex justify-between items-center p-3";
+
+//     div.innerHTML = `
+//       <div>
+//         <p class="font-medium">${tx.title}</p>
+//         <p class="text-xs text-gray-500">${tx.date}</p>
+//       </div>
+//       <span class="${
+//         isIncome ? "text-green-500" : "text-red-500"
+//       } font-semibold">
+//         ${isIncome ? "+" : "-"} ₹${Math.abs(tx.amount)}
+//       </span>
+//     `;
+
+//     list.appendChild(div);
+//   });
+// }
 function renderTransactions() {
   const list = document.getElementById("transaction-list");
   list.innerHTML = "";
+
+  if (transactions.length === 0) {
+    list.innerHTML = `<p class="text-center text-gray-400 text-sm py-2">No transactions yet</p>`;
+    return;
+  }
 
   transactions.forEach((tx) => {
     const isIncome = tx.amount > 0;
 
     const div = document.createElement("div");
-    div.className = "flex justify-between items-center p-3";
+    div.className =
+      "flex justify-between items-center p-3 border-b last:border-none";
 
     div.innerHTML = `
       <div>
         <p class="font-medium">${tx.title}</p>
         <p class="text-xs text-gray-500">${tx.date}</p>
       </div>
-      <span class="${
-        isIncome ? "text-green-500" : "text-red-500"
-      } font-semibold">
-        ${isIncome ? "+" : "-"} ₹${Math.abs(tx.amount)}
-      </span>
+
+      <div class="flex items-center gap-3">
+        <span class="${
+          isIncome ? "text-green-500" : "text-red-500"
+        } font-semibold">
+          ${isIncome ? "+" : "-"} ₹${Math.abs(tx.amount)}
+        </span>
+
+        <button
+          onclick="deleteTransaction(${tx.id})"
+          class="text-gray-400 hover:text-red-500 text-sm"
+          title="Delete"
+        >
+          ✕
+        </button>
+      </div>
     `;
 
     list.appendChild(div);
@@ -145,7 +217,7 @@ function addTransaction() {
     id: Date.now(),
     title,
     amount,
-    date: new Date().toISOString().split("T")[0],
+    date: formatDateTime(),
   });
 
   saveTransactions();

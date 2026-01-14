@@ -43,16 +43,17 @@
       <section class="p-4">
         <h3 class="text-gray-700 font-semibold mb-3">Recent Transactions</h3>
 
-        <div id="transaction-list" class="bg-white rounded-xl shadow divide-y">
-          <div class="flex justify-between items-center p-3">
-            <div>
-              <p class="font-medium">💼 Salary</p>
-              <p class="text-xs text-gray-500">1 Jan</p>
-            </div>
-            <span class="text-green-500 font-semibold">+ ₹800</span>
-          </div>
-        </div>
+        <div
+          id="transaction-list"
+          class="bg-white rounded-xl shadow divide-y"
+        ></div>
       </section>
+      <button
+        onclick="clearAllTransactions()"
+        class="w-full mt-4 py-2 rounded-lg bg-red-100 text-red-600 font-medium"
+      >
+        Clear All
+      </button>
     </section>
 
     <!-- Floating Add Button -->
