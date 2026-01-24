@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -215,6 +215,16 @@
         class="w-full p-3 border rounded-xl mb-4"
         placeholder="Title (Salary, Food, Rent)"
       />
+      <select
+        id="category"
+        class="w-full p-2 border rounded-lg mb-4 text-gray-500"
+      >
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Rent">Rent</option>
+        <option value="Other">Other</option>
+      </select>
 
       <!-- Submit -->
       <button
@@ -225,18 +235,165 @@
       </button>
     </section>
 
+    <!-- History page start -->
     <section id="history-section" class="page-section hidden p-4">
-      <h3 class="font-semibold mb-3 text-center">History page</h3>
+      <h3 class="text-lg font-semibold mb-4 text-center">
+        Transaction History
+      </h3>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-xl shadow p-3 mb-4 space-y-3">
+        <!-- Search -->
+        <input
+          id="history-search"
+          type="text"
+          placeholder="Search by title..."
+          class="w-full p-2 border rounded-lg focus:outline-none"
+          oninput="renderHistory()"
+        />
+
+        <!-- Type Filter -->
+        <div class="flex gap-2">
+          <button
+            onclick="setHistoryFilter('all')"
+            class="history-filter-btn flex-1 py-2 rounded-lg bg-blue-600 text-white text-sm"
+            id="filter-all"
+          >
+            All
+          </button>
+          <button
+            onclick="setHistoryFilter('income')"
+            class="history-filter-btn flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm"
+            id="filter-income"
+          >
+            Income
+          </button>
+          <button
+            onclick="setHistoryFilter('expense')"
+            class="history-filter-btn flex-1 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm"
+            id="filter-expense"
+          >
+            Expense
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <!-- Header -->
+        <div
+          class="grid grid-cols-3 text-xs font-semibold text-gray-500 bg-gray-50 p-3"
+        >
+          <div class="text-left">Title</div>
+          <div class="text-center">Date</div>
+          <div class="text-right">Amount</div>
+        </div>
+
+        <!-- Rows -->
+        <div id="history-table" class="divide-y"></div>
+        <div
+          id="history-pagination"
+          class="flex justify-center gap-2 m-4"
+        ></div>
+      </div>
+    </section>
+    <!-- History page end -->
+
+    <!-- Stats page start  -->
+    <!-- Stats Section -->
+    <section id="stats-section" class="page-section hidden p-4 pb-20 space-y-4">
+      <!-- Header -->
+      <h2 class="text-lg font-semibold text-center">Statistics</h2>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-xl shadow p-3 text-center">
+          <p class="text-xs text-gray-500">Income</p>
+          <p id="stats-income" class="text-green-600 font-semibold">₹0</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-3 text-center">
+          <p class="text-xs text-gray-500">Expense</p>
+          <p id="stats-expense" class="text-red-600 font-semibold">₹0</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-3 text-center">
+          <p class="text-xs text-gray-500">Balance</p>
+          <p id="stats-balance" class="font-semibold text-gray-600">₹0</p>
+        </div>
+      </div>
+
+      <!-- Time Filter -->
+      <div class="flex gap-2 mb-4">
+        <button
+          id="stats-all"
+          class="stats-filter-btn bg-blue-600 text-white px-3 py-1 rounded-lg"
+          onclick="setStatsFilter('all')"
+        >
+          All
+        </button>
+
+        <button
+          id="stats-week"
+          class="stats-filter-btn bg-gray-100 px-3 py-1 rounded-lg"
+          onclick="setStatsFilter('week')"
+        >
+          Week
+        </button>
+
+        <button
+          id="stats-month"
+          class="stats-filter-btn bg-gray-100 px-3 py-1 rounded-lg"
+          onclick="setStatsFilter('month')"
+        >
+          Month
+        </button>
+
+        <button
+          id="stats-year"
+          class="stats-filter-btn bg-gray-100 px-3 py-1 rounded-lg"
+          onclick="setStatsFilter('year')"
+        >
+          Year
+        </button>
+      </div>
+
+      <!-- Income vs Expense Chart -->
+      <div class="bg-white rounded-xl shadow p-4">
+        <p class="text-sm font-medium mb-2">Income vs Expense</p>
+        <div
+          class="h-48 flex items-center justify-center text-gray-400 text-sm"
+        >
+          <canvas id="incomeExpenseChart" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Expense Breakdown -->
+      <div class="bg-white rounded-xl shadow p-4">
+        <p class="text-sm font-medium mb-2">Expense Breakdown</p>
+        <div
+          class="h-48 flex items-center justify-center text-gray-400 text-sm"
+        >
+          <canvas id="expenseChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Insights -->
+      <div class="bg-white rounded-xl shadow p-4 space-y-2">
+        <p id="insight-1" class="text-sm text-gray-700"></p>
+        <p id="insight-2" class="text-sm text-gray-700"></p>
+      </div>
     </section>
 
-    <section id="stats-section" class="page-section hidden p-4">
-      <h3 class="font-semibold mb-3 text-center">Stats page</h3>
-    </section>
+    <!-- Stats page End -->
 
+    <!-- Profile page start  -->
     <section id="profile-section" class="page-section hidden p-4">
       <h3 class="font-semibold mb-3 text-center">Profile Page</h3>
     </section>
+    <!-- Profile page start  -->
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
