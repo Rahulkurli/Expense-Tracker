@@ -388,9 +388,118 @@
     <!-- Stats page End -->
 
     <!-- Profile page start  -->
+    <!-- Profile page start -->
     <section id="profile-section" class="page-section hidden p-4">
-      <h3 class="font-semibold mb-3 text-center">Profile Page</h3>
+      <h3 class="text-lg font-semibold mb-4 text-center">Profile</h3>
+
+      <div class="bg-white rounded-xl shadow p-4 space-y-4">
+        <!-- Avatar -->
+        <div class="flex justify-center">
+          <div
+            class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-semibold text-blue-600"
+            id="profile-avatar"
+          >
+            U
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="text-sm text-gray-500">Name</label>
+          <input
+            id="profile-name"
+            class="w-full mt-1 p-3 border rounded-xl focus:outline-none"
+            placeholder="Your name"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="text-sm text-gray-500">Email</label>
+          <input
+            id="profile-email"
+            type="email"
+            class="w-full mt-1 p-3 border rounded-xl focus:outline-none"
+            placeholder="you@email.com"
+          />
+        </div>
+
+        <!-- Joined -->
+        <div class="text-xs text-gray-400 text-center">
+          Joined on <span id="profile-joined"></span>
+        </div>
+
+        <!-- Save -->
+        <button
+          onclick="saveProfile()"
+          class="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold"
+        >
+          Save Profile
+        </button>
+      </div>
+
+      <!-- Financial Snapshot -->
+      <div class="grid grid-cols-2 gap-3 py-2">
+        <div class="bg-green-50 p-3 rounded-xl text-center">
+          <p class="text-xs text-gray-500">Total Income</p>
+          <p id="profile-income" class="text-lg font-semibold text-green-600">
+            ₹0
+          </p>
+        </div>
+
+        <div class="bg-red-50 p-3 rounded-xl text-center">
+          <p class="text-xs text-gray-500">Total Expense</p>
+          <p id="profile-expense" class="text-lg font-semibold text-red-600">
+            ₹0
+          </p>
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-xl text-center">
+          <p class="text-xs text-gray-500">Total Transactions</p>
+          <p id="profile-total" class="text-lg font-semibold text-blue-600">
+            0
+          </p>
+        </div>
+
+        <div class="bg-orange-50 p-3 rounded-xl text-center">
+          <p class="text-xs text-gray-500">Highest Expense</p>
+          <p id="profile-highest" class="text-lg font-semibold text-orange-600">
+            ₹0
+          </p>
+        </div>
+      </div>
+      <!-- Preferences -->
+      <div class="bg-gray-50 rounded-xl p-4 space-y-4">
+        <h4 class="font-semibold text-gray-700">Preferences</h4>
+
+        <!-- Currency -->
+        <div>
+          <label class="text-sm text-gray-500">Currency</label>
+          <select
+            id="currency-select"
+            onchange="savePreferences()"
+            class="w-full mt-1 p-3 border rounded-xl focus:outline-none"
+          >
+            <option value="₹">₹ Rupee</option>
+            <option value="$">$ Dollar</option>
+            <option value="€">€ Euro</option>
+          </select>
+        </div>
+
+        <!-- Dark Mode -->
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Dark Mode</span>
+          <input
+            type="checkbox"
+            id="dark-toggle"
+            onchange="toggleTheme()"
+            class="w-5 h-5"
+          />
+        </div>
+      </div>
     </section>
+    <!-- Profile page end -->
+
     <!-- Profile page start  -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -1,5 +1,27 @@
-let statsChart = null;
+/* ============================
+   GLOBAL VARIABLES
+============================ */
 
+// Chart.js instances
+let statsChart = null;
+let expenseChart = null;
+
+// App state
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let statsFilter = "all";
+let historyFilter = "all";
+let currentPage = 1;
+const rowsPerPage = 10;
+let transactionType = "income";
+
+// Profile state
+let profile = JSON.parse(localStorage.getItem("profile")) || null;
+
+/* ============================
+   DATE HELPERS
+============================ */
+
+// Format date into "DD/MM/YYYY HH:mm"
 function formatDateTime(date = new Date()) {
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -11,30 +33,46 @@ function formatDateTime(date = new Date()) {
   return `${d}/${m}/${y} ${h}:${min}`;
 }
 
+// Parse "DD/MM/YYYY HH:mm" into Date object
 function parseDate(dateStr) {
-  // "24/01/2026 12:45"
   const [datePart] = dateStr.split(" ");
   const [d, m, y] = datePart.split("/");
   return new Date(y, m - 1, d);
 }
 
+/* ============================
+   NAVIGATION LOGIC
+============================ */
+
 const navItems = document.querySelectorAll(".nav-item");
 
 navItems.forEach((item) => {
   item.addEventListener("click", () => {
+    // Remove active class from all nav items
     navItems.forEach((i) => i.classList.remove("active"));
+
+    // Add active class to clicked item
     item.classList.add("active");
 
+    // Show selected section
     const tab = item.dataset.tab;
     showSection(tab);
   });
 });
 
-let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+/* ============================
+   LOCAL STORAGE HELPERS
+============================ */
 
 function saveTransactions() {
   localStorage.setItem("transactions", JSON.stringify(transactions));
 }
+
+/* ============================
+   TRANSACTION CRUD
+============================ */
+
+// Delete a single transaction
 function deleteTransaction(id) {
   transactions = transactions.filter((tx) => tx.id !== id);
   saveTransactions();
@@ -42,6 +80,8 @@ function deleteTransaction(id) {
   updateSummary();
   renderStats();
 }
+
+// Clear all transactions
 function clearAllTransactions() {
   if (!transactions.length) return;
 
@@ -57,40 +97,21 @@ function clearAllTransactions() {
   renderStats();
 }
 
-// function renderTransactions() {
-//   const list = document.getElementById("transaction-list");
-//   list.innerHTML = "";
+/* ============================
+   HOME TRANSACTION LIST
+============================ */
 
-//   transactions.forEach((tx) => {
-//     const isIncome = tx.amount > 0;
-
-//     const div = document.createElement("div");
-//     div.className = "flex justify-between items-center p-3";
-
-//     div.innerHTML = `
-//       <div>
-//         <p class="font-medium">${tx.title}</p>
-//         <p class="text-xs text-gray-500">${tx.date}</p>
-//       </div>
-//       <span class="${
-//         isIncome ? "text-green-500" : "text-red-500"
-//       } font-semibold">
-//         ${isIncome ? "+" : "-"} ₹${Math.abs(tx.amount)}
-//       </span>
-//     `;
-
-//     list.appendChild(div);
-//   });
-// }
 function renderTransactions() {
   const list = document.getElementById("transaction-list");
   list.innerHTML = "";
 
+  // Empty state
   if (transactions.length === 0) {
     list.innerHTML = `<p class="text-center text-gray-400 text-sm py-2">No transactions yet</p>`;
     return;
   }
 
+  // Render each transaction
   transactions.forEach((tx) => {
     const isIncome = tx.type === "income";
 
@@ -99,23 +120,23 @@ function renderTransactions() {
       "flex justify-between items-center p-3 border-b last:border-none";
 
     div.innerHTML = `
-    <div>
-      <p class="font-medium">${tx.title}</p>
-      <p class="text-xs text-gray-500">${tx.date}</p>
-    </div>
+      <div>
+        <p class="font-medium">${tx.title}</p>
+        <p class="text-xs text-gray-500">${tx.date}</p>
+      </div>
 
-    <div class="flex items-center gap-3">
-      <span class="${isIncome ? "text-green-500" : "text-red-500"} font-semibold">
-        ${isIncome ? "+" : "-"} ₹${tx.amount}
-      </span>
+      <div class="flex items-center gap-3">
+        <span class="${isIncome ? "text-green-500" : "text-red-500"} font-semibold">
+          ${isIncome ? "+" : "-"} ₹${tx.amount}
+        </span>
 
-      <button
-        onclick="deleteTransaction(${tx.id})"
-        class="text-gray-400 hover:text-red-500 text-sm"
-      >
-        ✕
-      </button>
-    </div>
+        <button
+          onclick="deleteTransaction(${tx.id})"
+          class="text-gray-400 hover:text-red-500 text-sm"
+        >
+          ✕
+        </button>
+      </div>
     `;
 
     list.appendChild(div);
@@ -123,6 +144,10 @@ function renderTransactions() {
 }
 
 renderTransactions();
+
+/* ============================
+   SUMMARY LOGIC
+============================ */
 
 function updateSummary() {
   let balance = 0;
@@ -146,29 +171,35 @@ function updateSummary() {
 
 updateSummary();
 
-// Stats code
-let statsFilter = "all";
+/* ============================
+   STATS LOGIC
+============================ */
 
+// Change stats filter (all / week / month / year)
 function setStatsFilter(type) {
   statsFilter = type;
 
+  // Reset all filter buttons
   document.querySelectorAll(".stats-filter-btn").forEach((btn) => {
     btn.classList.remove("bg-blue-600", "text-white");
     btn.classList.add("bg-gray-100", "text-gray-700");
   });
 
+  // Activate selected filter button
   document
     .getElementById(`stats-${type}`)
     .classList.add("bg-blue-600", "text-white");
 
   renderStats();
 }
+
+// Render stats summary + chart
 function renderStats() {
   let income = 0;
   let expense = 0;
-
   const now = new Date();
 
+  // Filter transactions based on selected filter
   const filteredTransactions = transactions.filter((tx) => {
     if (statsFilter === "all") return true;
 
@@ -194,6 +225,7 @@ function renderStats() {
     return true;
   });
 
+  // Calculate totals
   filteredTransactions.forEach((tx) => {
     if (tx.type === "income") income += tx.amount;
     else expense += tx.amount;
@@ -201,12 +233,15 @@ function renderStats() {
 
   const balance = income - expense;
 
+  // Update UI
   document.getElementById("stats-income").innerText = `₹${income}`;
   document.getElementById("stats-expense").innerText = `₹${expense}`;
   document.getElementById("stats-balance").innerText = `₹${balance}`;
 
   renderIncomeExpenseChart(income, expense);
 }
+
+// Bar chart for income vs expense
 function renderIncomeExpenseChart(income, expense) {
   const ctx = document.getElementById("incomeExpenseChart").getContext("2d");
 
@@ -241,6 +276,11 @@ function renderIncomeExpenseChart(income, expense) {
   });
 }
 
+/* ============================
+   EXPENSE BREAKDOWN
+============================ */
+
+// Build category-wise expense data
 function getExpenseBreakdown() {
   const breakdown = {};
 
@@ -254,9 +294,7 @@ function getExpenseBreakdown() {
   return breakdown;
 }
 
-// expense chart
-let expenseChart = null;
-
+// Doughnut chart for expense categories
 function renderExpenseChart() {
   const data = getExpenseBreakdown();
 
@@ -295,14 +333,17 @@ function renderExpenseChart() {
     },
   });
 }
+
 renderExpenseChart();
 
-// Insights
+/* ============================
+   SMART INSIGHTS
+============================ */
+
 function renderInsights() {
   if (!transactions.length) return;
 
   const expenses = transactions.filter((t) => t.type === "expense");
-
   if (!expenses.length) return;
 
   const totalExpense = expenses.reduce((s, t) => s + t.amount, 0);
@@ -316,9 +357,13 @@ function renderInsights() {
   document.getElementById("insight-2").innerText =
     `🔥 Highest expense: ₹${highest.amount} on ${highest.title}.`;
 }
+
 renderInsights();
 
-// Show section code
+/* ============================
+   SECTION SWITCHING
+============================ */
+
 function showSection(tab) {
   document.querySelectorAll(".page-section").forEach((sec) => {
     sec.classList.add("hidden");
@@ -333,12 +378,20 @@ function showSection(tab) {
   if (tab === "stats") {
     renderStats();
   }
+  if (tab === "profile") {
+    loadProfile();
+    loadProfile();
+    renderProfileStats();
+  }
 }
 
-// transaction;
+/* ============================
+   TRANSACTION FORM
+============================ */
 
-let transactionType = "income";
+const categoryInput = document.getElementById("category");
 
+// Toggle income / expense
 function setType(type) {
   transactionType = type;
 
@@ -351,52 +404,7 @@ function setType(type) {
     (type === "expense" ? "bg-red-500 text-white" : "text-gray-600");
 }
 
-// function addTransaction() {
-//   const title = document.getElementById("title").value;
-//   const amount = +document.getElementById("amount").value;
-
-//   if (!title || !amount) return alert("Fill all fields");
-
-//   transactions.push({
-//     id: Date.now(),
-//     title,
-//     amount,
-//     date: new Date().toISOString().split("T")[0],
-//   });
-
-//   saveTransactions();
-//   renderTransactions();
-//   updateSummary();
-// }
-
-// 2nd
-
-// function addTransaction() {
-//   const title = document.getElementById("title").value;
-//   let amount = +document.getElementById("amount").value;
-
-//   if (!title || !amount) return alert("Fill all fields");
-
-//   if (transactionType === "expense") {
-//     amount = -amount;
-//   }
-
-//   transactions.push({
-//     id: Date.now(),
-//     title,
-//     amount,
-//     date: new Date().toISOString().split("T")[0],
-//   });
-
-//   saveTransactions();
-//   renderTransactions();
-//   updateSummary();
-
-//   showSection("home");
-// }
-
-const categoryInput = document.getElementById("category");
-
+// Add a new transaction
 function addTransaction() {
   const titleInput = document.getElementById("title");
   const amountInput = document.getElementById("amount");
@@ -422,21 +430,22 @@ function addTransaction() {
   renderTransactions();
   updateSummary();
 
+  // Reset form
   titleInput.value = "";
   amountInput.value = "";
   setType("income");
   showSection("home");
 
+  // Sync navbar active state
   document
     .querySelectorAll(".nav-item")
     .forEach((i) => i.classList.remove("active"));
   document.querySelector('.nav-item[data-tab="home"]').classList.add("active");
 }
 
-// HISTORY CODE
-let historyFilter = "all";
-let currentPage = 1;
-const rowsPerPage = 10;
+/* ============================
+   HISTORY PAGE
+============================ */
 
 function setHistoryFilter(type) {
   historyFilter = type;
@@ -462,26 +471,26 @@ function renderHistory() {
   const search = searchInput.value.toLowerCase();
   table.innerHTML = "";
 
-  // ✅ Single source of truth + latest first
+  // Always use latest data
   const storedTransactions = (
     JSON.parse(localStorage.getItem("transactions")) || []
   ).sort((a, b) => b.id - a.id);
 
-  /* 1️⃣ FILTER */
+  // Filter by type + search
   const filteredTransactions = storedTransactions.filter((tx) => {
     if (historyFilter !== "all" && tx.type !== historyFilter) return false;
     if (!tx.title.toLowerCase().includes(search)) return false;
     return true;
   });
 
-  /* 2️⃣ PAGINATION */
+  // Pagination
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedTransactions = filteredTransactions.slice(
     startIndex,
     startIndex + rowsPerPage,
   );
 
-  /* 3️⃣ RENDER ROWS (IMPORTANT FIX) */
+  // Render rows
   paginatedTransactions.forEach((tx) => {
     const row = document.createElement("div");
     row.className = "grid grid-cols-3 items-center p-3 text-sm";
@@ -503,7 +512,7 @@ function renderHistory() {
     table.appendChild(row);
   });
 
-  /* 4️⃣ EMPTY STATE */
+  // Empty state
   if (filteredTransactions.length === 0) {
     table.innerHTML = `
       <div class="p-4 text-center text-sm text-gray-500">
@@ -512,10 +521,10 @@ function renderHistory() {
     `;
   }
 
-  /* 5️⃣ PAGINATION UI */
   renderPagination(filteredTransactions.length);
 }
 
+// Pagination UI
 function renderPagination(totalRows) {
   const pagination = document.getElementById("history-pagination");
   if (!pagination) return;
@@ -546,3 +555,115 @@ function renderPagination(totalRows) {
     pagination.appendChild(btn);
   }
 }
+
+/* ============================
+   PROFILE LOGIC
+============================ */
+
+function loadProfile() {
+  if (!profile) {
+    profile = {
+      name: "",
+      email: "",
+      joined: formatDateTime(),
+    };
+    localStorage.setItem("profile", JSON.stringify(profile));
+  }
+
+  document.getElementById("profile-name").value = profile.name;
+  document.getElementById("profile-email").value = profile.email;
+  document.getElementById("profile-joined").innerText = profile.joined;
+
+  updateAvatar(profile.name);
+}
+
+function saveProfile() {
+  const name = document.getElementById("profile-name").value.trim();
+  const email = document.getElementById("profile-email").value.trim();
+
+  if (!name || !email) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  profile.name = name;
+  profile.email = email;
+
+  localStorage.setItem("profile", JSON.stringify(profile));
+  updateAvatar(name);
+
+  alert("Profile saved successfully ✅");
+}
+
+// Generate avatar letter
+function updateAvatar(name) {
+  const avatar = document.getElementById("profile-avatar");
+  avatar.innerText = name ? name.charAt(0).toUpperCase() : "U";
+}
+function renderProfileStats() {
+  let income = 0;
+  let expense = 0;
+  let highestExpense = 0;
+
+  transactions.forEach((tx) => {
+    if (tx.type === "income") {
+      income += tx.amount;
+    } else {
+      expense += tx.amount;
+      if (tx.amount > highestExpense) {
+        highestExpense = tx.amount;
+      }
+    }
+  });
+
+  document.getElementById("profile-income").innerText = `₹${income}`;
+  document.getElementById("profile-expense").innerText = `₹${expense}`;
+  document.getElementById("profile-total").innerText = transactions.length;
+  document.getElementById("profile-highest").innerText = `₹${highestExpense}`;
+}
+
+/* =====================
+   PROFILE STEP 3 LOGIC
+===================== */
+
+let preferences = JSON.parse(localStorage.getItem("preferences")) || {
+  currency: "₹",
+  theme: "light",
+};
+
+function loadPreferences() {
+  document.getElementById("currency-select").value = preferences.currency;
+  document.getElementById("dark-toggle").checked = preferences.theme === "dark";
+
+  applyTheme();
+}
+
+function savePreferences() {
+  const currency = document.getElementById("currency-select").value;
+
+  preferences.currency = currency;
+  localStorage.setItem("preferences", JSON.stringify(preferences));
+
+  updateSummary();
+  renderTransactions();
+  renderHistory();
+}
+
+function toggleTheme() {
+  preferences.theme = document.getElementById("dark-toggle").checked
+    ? "dark"
+    : "light";
+
+  localStorage.setItem("preferences", JSON.stringify(preferences));
+  applyTheme();
+}
+
+function applyTheme() {
+  if (preferences.theme === "dark") {
+    document.body.classList.add("bg-gray-900", "text-white");
+  } else {
+    document.body.classList.remove("bg-gray-900", "text-white");
+  }
+}
+
+const CURRENCY = preferences.currency;
