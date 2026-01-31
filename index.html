@@ -468,40 +468,16 @@
           </p>
         </div>
       </div>
-      <!-- Preferences -->
-      <div class="bg-gray-50 rounded-xl p-4 space-y-4">
-        <h4 class="font-semibold text-gray-700">Preferences</h4>
-
-        <!-- Currency -->
-        <div>
-          <label class="text-sm text-gray-500">Currency</label>
-          <select
-            id="currency-select"
-            onchange="savePreferences()"
-            class="w-full mt-1 p-3 border rounded-xl focus:outline-none"
-          >
-            <option value="₹">₹ Rupee</option>
-            <option value="$">$ Dollar</option>
-            <option value="€">€ Euro</option>
-          </select>
-        </div>
-
-        <!-- Dark Mode -->
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-600">Dark Mode</span>
-          <input
-            type="checkbox"
-            id="dark-toggle"
-            onchange="toggleTheme()"
-            class="w-5 h-5"
-          />
-        </div>
-      </div>
+      <button class="bg-red-400 p-2 my-3 rounded text-white" onclick="logout()">
+        Logout
+      </button>
     </section>
     <!-- Profile page end -->
 
     <!-- Profile page start  -->
-
+    <!-- <script>
+      checkAuth();
+    </script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
   </body>

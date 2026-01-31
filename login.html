@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Login | Expense Tracker</title>
+  </head>
+
+  <body class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-blue-600">Welcome Back</h1>
+        <p class="text-sm text-gray-500">Login to manage your expenses</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="space-y-4">
+        <!-- Email -->
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Email Address"
+          class="input"
+        />
+
+        <!-- Password -->
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Password"
+          class="input"
+        />
+
+        <!-- Login Button -->
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+        >
+          Login
+        </button>
+      </form>
+
+      <!-- Signup Redirect -->
+      <p class="text-sm text-center text-gray-500 mt-5">
+        Don’t have an account?
+        <a href="signup.html" class="text-blue-600 font-medium">Create one</a>
+      </p>
+    </div>
+
+    <!-- Shared Input Styles -->
+    <style>
+      .input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        outline: none;
+      }
+      .input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+    </style>
+
+    <script src="auth.js"></script>
+  </body>
+</html>

@@ -381,6 +381,7 @@ function showSection(tab) {
   if (tab === "profile") {
     loadProfile();
     loadProfile();
+    loadProfile();
     renderProfileStats();
   }
 }
@@ -667,3 +668,90 @@ function applyTheme() {
 }
 
 const CURRENCY = preferences.currency;
+function getLoggedInUser() {
+  return JSON.parse(localStorage.getItem("loggedInUser"));
+}
+
+function loadProfile() {
+  const user = getLoggedInUser();
+  if (!user) return;
+
+  // Avatar
+  const avatar = document.getElementById("profile-avatar");
+  if (user.image) {
+    avatar.innerHTML = `<img src="${user.image}" class="w-full h-full rounded-full object-cover" />`;
+  } else {
+    avatar.textContent = user.firstName[0].toUpperCase();
+  }
+
+  // Name & Email
+  document.getElementById("profile-name").value =
+    `${user.firstName} ${user.lastName}`;
+  document.getElementById("profile-email").value = user.email;
+
+  // Joined Date
+  const joined = new Date(user.createdAt);
+  document.getElementById("profile-joined").textContent = joined.toDateString();
+
+  // Load financial snapshot
+  loadProfileStats();
+}
+
+function loadProfileStats() {
+  const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+  let income = 0;
+  let expense = 0;
+  let highestExpense = 0;
+
+  transactions.forEach((t) => {
+    if (t.type === "income") {
+      income += Number(t.amount);
+    } else {
+      expense += Number(t.amount);
+      highestExpense = Math.max(highestExpense, Number(t.amount));
+    }
+  });
+
+  document.getElementById("profile-income").textContent = `₹${income}`;
+  document.getElementById("profile-expense").textContent = `₹${expense}`;
+  document.getElementById("profile-total").textContent = transactions.length;
+  document.getElementById("profile-highest").textContent = `₹${highestExpense}`;
+}
+
+function saveProfile() {
+  const user = getLoggedInUser();
+  if (!user) return;
+
+  const fullName = document.getElementById("profile-name").value.trim();
+  const email = document.getElementById("profile-email").value.trim();
+
+  if (!fullName || !email) {
+    alert("Name & Email are required");
+    return;
+  }
+
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    alert("Invalid email format");
+    return;
+  }
+
+  const [firstName, ...last] = fullName.split(" ");
+  user.firstName = firstName;
+  user.lastName = last.join(" ");
+  user.email = email;
+
+  // Update users list
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map((u) => (u.email === user.email ? user : u));
+
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+  alert("Profile updated successfully");
+}
+
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "login.html";
+}

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Signup | Expense Tracker</title>
+  </head>
+
+  <body class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-blue-600">Create Account</h1>
+        <p class="text-sm text-gray-500">Track your expenses smarter</p>
+      </div>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="space-y-4">
+        <!-- Name -->
+        <div class="grid grid-cols-2 gap-3">
+          <input
+            id="firstName"
+            type="text"
+            placeholder="First Name"
+            class="input"
+          />
+          <input
+            id="lastName"
+            type="text"
+            placeholder="Last Name"
+            class="input"
+          />
+        </div>
+
+        <!-- DOB -->
+        <div>
+          <label class="label">Date of Birth</label>
+          <input id="dob" type="date" class="input" />
+        </div>
+
+        <!-- Gender -->
+        <div>
+          <label class="label">Gender</label>
+          <select id="gender" class="input">
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="label">Address</label>
+          <textarea
+            id="address"
+            rows="2"
+            placeholder="Your address"
+            class="input resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Mobile -->
+        <input
+          id="mobile"
+          type="text"
+          placeholder="Mobile Number"
+          class="input"
+        />
+
+        <!-- Email -->
+        <input
+          id="email"
+          type="email"
+          placeholder="Email Address"
+          class="input"
+        />
+
+        <!-- Password -->
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          class="input"
+        />
+
+        <input
+          id="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          class="input"
+        />
+
+        <!-- Image -->
+        <div>
+          <label class="label">Profile Image</label>
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+          />
+        </div>
+
+        <!-- Terms -->
+        <label class="flex items-start gap-2 text-sm text-gray-600">
+          <input id="terms" type="checkbox" class="mt-1" />
+          I agree to <span class="text-blue-600">Terms & Conditions</span>
+        </label>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <!-- Login -->
+      <p class="text-sm text-center text-gray-500 mt-5">
+        Already have an account?
+        <a href="login.html" class="text-blue-600 font-medium">Login</a>
+      </p>
+    </div>
+
+    <!-- Tailwind Utilities -->
+    <style>
+      .input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        outline: none;
+      }
+      .input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+      .label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+      }
+    </style>
+
+    <script src="auth.js"></script>
+  </body>
+</html>

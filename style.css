@@ -37,3 +37,11 @@
   color: #2563eb;
   font-weight: 500;
 }
+
+input,
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
